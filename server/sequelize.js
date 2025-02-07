@@ -1,10 +1,10 @@
-const { Sequelize } = require('sequelize');
-
  
-const sequelize = new Sequelize('myEMS', 'banti', 'banti1234', {
-    host: 'localhost',  
+const { Sequelize, DataTypes } = require('sequelize');
+ 
+const sequelize = new Sequelize('TestDB', 'snpl', 'setu@123', {
+    host: '172.18.0.4',  
     dialect: 'mssql',   
-    port: 1433,         
+    //port: 1433,         
     dialectOptions: {
         options: {
             encrypt: true,  
@@ -14,17 +14,26 @@ const sequelize = new Sequelize('myEMS', 'banti', 'banti1234', {
     logging: false, 
 });
  
+// sequelize.authenticate().then(() => {
+//     console.log('Connection has been established successfully.');  
+//  }).catch((error) => {
+//     console.error('Unable to connect to the database: ', error);
+//  });
+
 async function testConnection() {
     try {
-        await sequelize.authenticate();
+        await sequelize.authenticate(); 
         console.log('Connection to the database has been established successfully.');
+     
     } catch (error) {
         console.error('Unable to connect to the database:', error);
     }
 }
 
-// Run the test on startup
+ 
 testConnection();
+ 
+ 
+ 
 
-// Export the Sequelize instance for use in models
 module.exports = sequelize;

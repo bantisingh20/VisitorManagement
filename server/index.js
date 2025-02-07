@@ -1,11 +1,12 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const CommonRoutes = require('./Router/Common.routes');
-const sequelize = require('./sequelize');   
+const sequelize = require('./sequelize'); 
+const CommonRoutes = require('./Router/Common.routes');  
 const generateSwaggerSpec = require('./swaggerConfig');
 const swaggerUi = require('swagger-ui-express');
 const cors = require('cors');
-const app = express();
+const app = express(); 
+ 
 //app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(generateSwaggerSpec()));
 const PORT = process.env.PORT || 3000;   
 require('dotenv').config();
@@ -20,9 +21,14 @@ app.use('/api', CommonRoutes);
  
 async function startServer() {
     try {
-        //await sequelize.sync({ force: false }); 
-        //console.log('Models synchronized with the database');
-
+ 
+        sequelize.sync({ force: false, alter: process.env.ALTER_REQUIRE }).then(() => {
+            console.log('All Tables has been Created!');
+        }).catch((error) => {
+            console.error('Unable to create table : ', error);
+        });
+        
+       
         app.listen(PORT, (err) => {
             if (err) {
                 console.log('Error starting server:', err);
@@ -35,6 +41,5 @@ async function startServer() {
         console.error('Error syncing models:', error);
     }
 }
-
 
 startServer();

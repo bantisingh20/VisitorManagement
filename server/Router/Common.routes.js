@@ -1,16 +1,19 @@
-const express = require('express');
+const express = require('express'); 
+const { SearchVisitorByNumber, GetVisitorById, GetAllVisitor } = require('../Controllers/Visitor.controller');
+const { SaveVisitPurpose, GetAllPurpose } = require('../Controllers/visitpurpose.controller');
+const { SaveEmployee, GetAllEmployees } = require('../Controllers/Employee.controller');
 const router = express.Router();
-const AuthRouter = require('./Auth.routes');
-const { verifyuser } = require('../MiddleWare/authhentication');
-const { SaveDepartment, GetAllDepartment } = require('../Controllers/department.controller');
 
- 
-router.use('/auth', AuthRouter);
 
-router.post('/department/save-department',verifyuser,SaveDepartment)
-router.get('/department/GetAllDepartment',verifyuser,GetAllDepartment);
-// route.get('/department/GetDepartmentById/:id',GetDepartmentById);
-// route.put('/department/UpdateDepartment',UpdateDepartment);
-// route.delete('/department/deleteDepartmentByID/:id',DeleteDepartment);
+router.post('/master/add-Employees', SaveEmployee);
+router.get('/master/GetAllEmployees', GetAllEmployees);
+
+router.post('/master/add-purpose', SaveVisitPurpose);
+router.get('/master/GetAllPurpose', GetAllPurpose);
+
+router.get('/visitor/visitor-search',SearchVisitorByNumber);
+router.get('/visitor/GetVisitorDetailsById/:Visitorid',GetVisitorById);
+router.get('/visitor/GetAllVisitor',GetAllVisitor);
+
 
 module.exports = router;
