@@ -51,7 +51,7 @@ const VisitorSearch = () => {
           <div className="bg-gradient-to-r from-green-400 via-skyblue-400 to-green-400 p-4 rounded-t-lg">
             <h5 
               className="text-center bg-clip-text bg-gradient-to-r from-green-400 via-skyblue-400 to-green-400 font-semibold text-xl">
-              Ronch Polymer Brindavan Beverages
+              demo
             </h5>
           </div>
 
