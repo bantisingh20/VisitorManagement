@@ -1,89 +1,313 @@
 import React, { useState } from "react";
-import DataTable from "react-data-table-component";
+import {
+  Card,
+  CardContent,
+  Avatar,
+  Typography,
+  Button,
+  Chip,
+  Grid,
+  ToggleButtonGroup,
+  ToggleButton,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TablePagination
+} from "@mui/material";
 
 const EmployeeDashboard = () => {
-  const [searchQuery, setSearchQuery] = useState("");
-  const visitors = [
-    { id: 1, name: "John Doe", status: "Checked-in", meetingStatus: "Ended", from: "Company A", purpose: "Meeting", date: "2025-02-07", avatar: "https://randomuser.me/api/portraits/men/1.jpg" },
-    { id: 2, name: "Jane Smith", status: "Checked-in", meetingStatus: "Ongoing", from: "Company B", purpose: "Interview", date: "2025-02-07", avatar: "https://randomuser.me/api/portraits/women/2.jpg" },
-    { id: 3, name: "Alice Johnson", status: "Checked-in", meetingStatus: "Ended", from: "Company C", purpose: "Business", date: "2025-02-06", avatar: "https://randomuser.me/api/portraits/women/3.jpg" },
-    { id: 4, name: "Bob Brown", status: "Checked-in", meetingStatus: "Ended", from: "Company D", purpose: "Consultation", date: "2025-02-05", avatar: "https://randomuser.me/api/portraits/men/4.jpg" },
-    { id: 5, name: "Emily Davis", status: "Checked-in", meetingStatus: "Ongoing", from: "Company E", purpose: "Sales", date: "2025-02-04", avatar: "https://randomuser.me/api/portraits/women/5.jpg" },
-    { id: 6, name: "Frank White", status: "Checked-in", meetingStatus: "Ended", from: "Company F", purpose: "Technical Support", date: "2025-02-03", avatar: "https://randomuser.me/api/portraits/men/6.jpg" },
-    { id: 7, name: "Grace Lee", status: "Checked-in", meetingStatus: "Ended", from: "Company G", purpose: "Consulting", date: "2025-02-02", avatar: "https://randomuser.me/api/portraits/women/7.jpg" },
-    { id: 8, name: "Henry King", status: "Checked-in", meetingStatus: "Ongoing", from: "Company H", purpose: "Training", date: "2025-02-01", avatar: "https://randomuser.me/api/portraits/men/8.jpg" },
-    { id: 9, name: "Isabella Wright", status: "Checked-in", meetingStatus: "Ended", from: "Company I", purpose: "Workshop", date: "2025-01-31", avatar: "https://randomuser.me/api/portraits/women/9.jpg" },
-    { id: 10, name: "Jack Scott", status: "Checked-in", meetingStatus: "Ended", from: "Company J", purpose: "Partnership", date: "2025-01-30", avatar: "https://randomuser.me/api/portraits/men/10.jpg" }
-  ];
+  const [view, setView] = useState("table");
+  const [page, setPage] = useState(0);
+  const rowsPerPage = 10;
+   
 
-  const filteredVisitors = visitors.filter(visitor => 
-    visitor.status === "Checked-in" && visitor.meetingStatus === "Ended" && 
-    (visitor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      visitor.from.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const visitors = Array.from({ length: 10 }, (_, i) => ({
+    id: i + 1,
+    name: `Visitor ${i + 1}`,
+    status: "Checked-in",
+    meetingStatus: "Ended",
+    from: `Company ${String.fromCharCode(65 + (i % 10))}`,
+    purpose: "Business",
+    date: `2025-02-${String(i % 28 + 1).padStart(2, "0")}`,
+    avatar: `https://randomuser.me/api/portraits/men/${(i % 10) + 1}.jpg`,
+  }));
+
+  const handleChangePage = (event, newPage) => {
+    setPage(newPage);
+  };
 
   return (
-    <div className="bg-blue-50 p-6 min-h-screen">
-      <h2 className="text-3xl font-bold text-blue-600 mb-6">Employee Dashboard</h2>
-      <input
-        type="text"
-        placeholder="Search by name or company..."
-        className="border p-2 rounded-md w-full md:w-1/3 mb-4"
-        value={searchQuery}
-        onChange={(e) => setSearchQuery(e.target.value)}
-      />
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredVisitors.map((visitor) => (
-          <div key={visitor.id} className="p-5 bg-white shadow-lg rounded-xl border border-gray-200 flex items-center gap-4">
-            <div>
-               
-              <img src={visitor.avatar} alt={visitor.name} className="w-16 h-16 rounded-full" />
-            </div>
-            
-            <div>
-              <h3 className="text-xl font-bold text-gray-800">{visitor.name}</h3>
-              
-              <p className="text-sm text-gray-500">Coming from: {visitor.from}</p>
-              <p><strong>Purpose:</strong> {visitor.purpose}</p>
-              <p><strong>Date:</strong> {visitor.date}</p>
-            </div>
+    <div className="p-6 min-h-screen bg-gray-50">
+    
+      <Typography 
+        variant="h4" 
+        color="primary" 
+        className="mb-6 font-bold" 
+        style={{ fontFamily: 'Poppins, sans-serif', textAlign: 'center' }}
+      >
+        Welcome, Employee! 👋
+      </Typography>
+
+      <Typography 
+        variant="subtitle1" 
+        color="textSecondary" 
+        className="mb-6 text-center" 
+        style={{ fontFamily: 'Poppins, sans-serif' }}
+      >
+        Here’s a list of visitors who are currently checked in and meeting with you.
+      </Typography>
 
 
-            
-          </div>
+      {/* View Toggle */}
+      <div className="mb-4 flex justify-between">
+        <ToggleButtonGroup
+          value={view}
+          exclusive
+          onChange={(e, newView) => setView(newView)}
+        >
+          <ToggleButton value="card">Card View</ToggleButton>
+          <ToggleButton value="table">Table View</ToggleButton>
+        </ToggleButtonGroup>
 
-          
-        ))}
+        <Button variant="contained" color="primary">
+          Apply Filters
+        </Button>
       </div>
+
+      {view === "card" ? (
+        <Grid container spacing={3}>
+          {visitors.map((visitor) => (
+            <Grid item xs={12} sm={6} md={3} key={visitor.id}>
+              <Card className="shadow-lg hover:shadow-xl transition-all duration-300">
+                <CardContent className="flex items-center gap-4">
+                  <Avatar src={visitor.avatar} alt={visitor.name} sx={{ width: 60, height: 60 }} />
+                  <div>
+                    <Typography variant="h6" className="font-semibold">{visitor.name}</Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      From: {visitor.from}
+                    </Typography>
+                    <Typography variant="body2"><strong>Purpose:</strong> {visitor.purpose}</Typography>
+                    <Typography variant="body2"><strong>Date:</strong> {visitor.date}</Typography>
+                    <Chip
+                      label={visitor.status}
+                      color="success"
+                      size="small"
+                      className="mt-2"
+                    />
+                  </div>
+                </CardContent>
+                <Button variant="contained" color="secondary" fullWidth>
+                  End Meeting
+                </Button>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Avatar</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>From</TableCell>
+              <TableCell>Purpose</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Action</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {visitors.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((visitor) => (
+              <TableRow key={visitor.id}>
+                <TableCell>
+                  <Avatar src={visitor.avatar} alt={visitor.name} />
+                </TableCell>
+                <TableCell>{visitor.name}</TableCell>
+                <TableCell>{visitor.from}</TableCell>
+                <TableCell>{visitor.purpose}</TableCell>
+                <TableCell>{visitor.date}</TableCell>
+                <TableCell>
+                  <Chip label={visitor.status} color="success" size="small" />
+                </TableCell>
+                <TableCell>
+                  <Button variant="contained" color="secondary">
+                    End Meeting
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+        <TablePagination
+          rowsPerPageOptions={[10]}
+          component="div"
+          count={visitors.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onPageChange={handleChangePage}
+        />
+      </TableContainer>
+      )}
     </div>
   );
 };
 
 export { EmployeeDashboard };
 
+// import { useState } from "react";
+// import Filter from "../CommonComponents/Filter";
+// import {
+//   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
+//   TablePagination, Button, Grid, Card, CardContent, Avatar, Typography,
+//   ToggleButton, ToggleButtonGroup, Chip
+// } from "@mui/material";
+
+// const EmployeeDashboard = () => {
+//   const [open, setOpen] = useState(false);
+//   const [view, setView] = useState("table");
+//   const [page, setPage] = useState(0);
+//   const [visibleCards, setVisibleCards] = useState(10);
+//   const rowsPerPage = 10;
+
+//   const visitors = Array.from({ length: 50 }, (_, i) => ({
+//     id: i + 1,
+//     name: `Visitor ${i + 1}`,
+//     status: "Checked-in",
+//     meetingStatus: "Ended",
+//     from: `Company ${String.fromCharCode(65 + (i % 10))}`,
+//     purpose: "Business",
+//     date: `2025-02-${String(i % 28 + 1).padStart(2, "0")}`,
+//     avatar: `https://randomuser.me/api/portraits/men/${(i % 10) + 1}.jpg`,
+//   }));
+
+//   const handleChangePage = (event, newPage) => setPage(newPage);
+//   const handleLoadMore = () => setVisibleCards((prev) => prev + 10);
+
+//   const handleApplyFilters = (filters) => {
+//     console.log("Applied Filters:", filters);
+//   };
+
+//   return (
+//     <div className="p-6 min-h-screen" style={{ background: "linear-gradient(to right, #E3F2FD, #EDE7F6)" }}>
+//       <Typography variant="h4" color="primary" className="mb-6 font-bold" style={{ textAlign: 'center', fontFamily: 'Poppins, sans-serif' }}>
+//         Welcome, Employee! 👋
+//       </Typography>
+
+//       <Typography variant="subtitle1" color="textSecondary" className="mb-6 text-center" style={{ fontFamily: 'Poppins, sans-serif' }}>
+//         Here’s a list of visitors who are currently checked in and meeting with you.
+//       </Typography>
+
+//       {/* View Toggle */}
+//       <div className="mb-4 flex justify-between items-center">
+//         <ToggleButtonGroup
+//           value={view}
+//           exclusive
+//           onChange={(e, newView) => setView(newView)}
+//           style={{ border: "2px solid #5C6BC0", borderRadius: "8px", padding: "5px" }}
+//         >
+//           <ToggleButton value="card" style={{ color: view === "card" ? "#fff" : "#5C6BC0", background: view === "card" ? "#5C6BC0" : "transparent" }}>
+//             Card View
+//           </ToggleButton>
+//           <ToggleButton value="table" style={{ color: view === "table" ? "#fff" : "#5C6BC0", background: view === "table" ? "#5C6BC0" : "transparent" }}>
+//             Table View
+//           </ToggleButton>
+//         </ToggleButtonGroup>
+        
+//         <Button variant="contained" onClick={() => setOpen(true)} color="primary" size="small" style={{ fontSize: "12px", padding: "6px 12px" }}>
+//           Apply Filters
+//         </Button>
+//         <Filter open={open} onClose={() => setOpen(false)} onApply={handleApplyFilters} />
+//       </div>
+
+//       {view === "card" ? (
+//         <>
+//           <Grid container spacing={3}>
+//             {visitors.slice(0, visibleCards).map((visitor) => (
+//               <Grid item xs={12} sm={6} md={3} key={visitor.id}>
+//                 <Card
+//                   className="shadow-md hover:shadow-xl transition-all duration-300"
+//                   style={{
+//                     borderRadius: "10px",
+//                     background: "#F5F5F5",  // Light Grey Background
+//                     color: "black",
+//                     padding: "10px",
+//                     transition: "transform 0.3s ease",
+//                   }}
+//                   onMouseEnter={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+//                   onMouseLeave={(e) => e.currentTarget.style.transform = "scale(1)"}
+//                 >
+//                   <CardContent className="flex items-center gap-4">
+//                     <Avatar src={visitor.avatar} alt={visitor.name} sx={{ width: 60, height: 60, border: "2px solid #5C6BC0" }} />
+//                     <div>
+//                       <Typography variant="h6" className="font-semibold">{visitor.name}</Typography>
+//                       <Typography variant="body2">From: {visitor.from}</Typography>
+//                       <Typography variant="body2"><strong>Purpose:</strong> {visitor.purpose}</Typography>
+//                       <Typography variant="body2"><strong>Date:</strong> {visitor.date}</Typography>
+//                       <span 
+//                           className={`mt-2 px-3 py-1 text-sm font-semibold rounded-full text-white ${
+//                             visitor.status === "Pending" ? "bg-yellow-500" : "bg-green-500"
+//                           }`}
+//                         >
+//                           {visitor.status}
+//                         </span>
+//                       {/* <Chip label={visitor.status} style={{ background: "linear-gradient(to right, #64B5F6, #7986CB)", color: "white" }} size="small" className="mt-2" /> */}
+//                     </div>
+//                   </CardContent>
+//                 </Card>
+//               </Grid>
+//             ))}
+//           </Grid>
+//           {visibleCards < visitors.length && (
+//             <div className="text-center mt-6">
+//               <Button variant="outlined" onClick={handleLoadMore}>
+//                 Load More
+//               </Button>
+//             </div>
+//           )}
+//         </>
+//       ) : (
+//         <TableContainer component={Paper} style={{ borderRadius: "10px", overflow: "hidden" }}>
+//           <Table>
+//             <TableHead>
+//               <TableRow style={{ backgroundColor: "#3949AB" }}>
+//                 {["Avatar", "Name", "From", "Purpose", "Date", "Status", "Action"].map((heading) => (
+//                   <TableCell key={heading} style={{ fontWeight: "bold", color: "white" }}>{heading}</TableCell>
+//                 ))}
+//               </TableRow>
+//             </TableHead>
+//             <TableBody>
+//               {visitors.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((visitor, index) => (
+//                 <TableRow key={visitor.id} style={{ backgroundColor: index % 2 === 0 ? "#E3F2FD" : "#EDE7F6" }}>
+//                   <TableCell><Avatar src={visitor.avatar} alt={visitor.name} /></TableCell>
+//                   <TableCell>{visitor.name}</TableCell>
+//                   <TableCell>{visitor.from}</TableCell>
+//                   <TableCell>{visitor.purpose}</TableCell>
+//                   <TableCell>{visitor.date}</TableCell>
+//                   <TableCell>
+//                     <Chip label={visitor.status} style={{ background: "linear-gradient(to right, #64B5F6, #7986CB)", color: "white" }} size="small" />
+//                   </TableCell>
+//                   <TableCell>
+//                     <Button variant="contained" style={{ backgroundColor: "#424242", color: "#fff", cursor: "not-allowed" }}>
+//                       End Meeting
+//                     </Button>
+//                   </TableCell>
+//                 </TableRow>
+//               ))}
+//             </TableBody>
+//           </Table>
+//           <TablePagination rowsPerPageOptions={[10]} component="div" count={visitors.length} rowsPerPage={rowsPerPage} page={page} onPageChange={handleChangePage} />
+//         </TableContainer>
+//       )}
+//     </div>
+//   );
+// };
+
+// //export default EmployeeDashboard;
 
 
-
-
-
-{/*
-  
-  
-  <span 
-                className={`px-3 py-1 text-sm font-semibold rounded-full text-white ${
-                  visitor.status === "Pending" ? "bg-yellow-500" : visitor.status === "Checked-in" ? "bg-green-500" : "bg-gray-500"
-                }`}
-              >
-                {visitor.status}
-              </span>
-              
-              <div className="mt-3">
-              {visitor.status === "Checked-in" && (
-                <button 
-                  onClick={() => handleUpdateMeetingStatus(visitor.id)}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                >
-                  End Meeting
-                </button>
-              )}
-            </div> */}
+// export  {EmployeeDashboard};

@@ -6,16 +6,16 @@ const ReceptionistDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [purposeFilter, setPurposeFilter] = useState("All");
 
-
-  const [visitors, setVisitors] = useState([
-    { id: 1, name: "John Doe", status: "Pending", from: "Company A", host: "", purpose: "Meeting", date: "2025-02-07" },
-    { id: 2, name: "Jane Smith", status: "Checked-in", from: "Company B", host: "Mr. Brown", purpose: "Interview", date: "2025-02-07" },
-    { id: 3, name: "John Doe", status: "Pending", from: "Company A", host: "", purpose: "Meeting", date: "2025-02-07" },
-    { id: 4, name: "Jane Smith", status: "Checked-in", from: "Company B", host: "Mr. Brown", purpose: "Interview", date: "2025-02-07" },
-    { id: 5, name: "John Doe", status: "Pending", from: "Company A", host: "", purpose: "Meeting", date: "2025-02-07" },
-    { id: 6, name: "Jane Smith", status: "Checked-in", from: "Company B", host: "Mr. Brown", purpose: "Interview", date: "2025-02-07" },
-
-  ]);
+  const visitors = Array.from({ length: 50 }, (_, i) => ({
+    id: i + 1,
+    name: `Visitor ${i + 1}`,
+    status: "Checked-in",
+    meetingStatus: "Ended",
+    from: `Company ${String.fromCharCode(65 + (i % 10))}`,
+    purpose: "Business",
+    date: `2025-02-${String(i % 28 + 1).padStart(2, "0")}`,
+    avatar: `https://randomuser.me/api/portraits/men/${(i % 10) + 1}.jpg`,
+  }));
 
   const handleCheckIn = (id) => {
     setVisitors(
@@ -90,6 +90,7 @@ const ReceptionistDashboard = () => {
                 {visitor.status}
               </span>
             </div>
+            
             <p><strong>Host:</strong> {visitor.host || "Not assigned"}</p>
             <p><strong>Purpose:</strong> {visitor.purpose}</p>
             <p><strong>Date:</strong> {visitor.date}</p>
